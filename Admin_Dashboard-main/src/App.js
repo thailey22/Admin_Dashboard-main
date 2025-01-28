@@ -13,10 +13,9 @@ import Settings from './components/Settings-Comp/Settings';
 import Login from './components/Login-Comp/Login.js'; // Import the Login component
 import { AuthProvider, useAuth } from './components/Firebase/Context/auth-context';
 import Footer from './components/View-Comp/Footer.js';
-import { auth } from './components/Firebase/firebase.js';
 //import { AuthProvider, authcon } from './context/auth-context.js';
 
-function App(){
+function AppContent(){
   const routesArray =[
     {
       path: '/dashboard',
@@ -52,21 +51,30 @@ function App(){
 
   ];
 
+
   let routeElement = useRoutes(routesArray);
 
-  const {isLoggedIn}  = AuthProvider(isLoggedIn)
+  const {userLogIn}  = useAuth();
 
   return(
-    <AuthProvider>
     <div className="app-container">
-      <Header />
+      {userLogIn && <Header />}
       <div className="main-layout">
-       {isLoggedIn && <Sidebar />}
+       {userLogIn && <Sidebar />}
         <div className="content-container">{routeElement}</div>
       </div>
       <Footer />
     </div>
-  </AuthProvider>
   )
 }
+
+
+  function App() {
+    return (
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    );
+}
+
 export default App;
