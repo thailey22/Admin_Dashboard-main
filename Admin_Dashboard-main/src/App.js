@@ -10,6 +10,7 @@ import Reservations from './components/Reservation-Comp/Reservations';
 import Users from './components/User-Comp/Users';
 import Reports from './components/Reports-Comp/Reports';
 import Settings from './components/Settings-Comp/Settings';
+import ForgotPassword from './components/PasswordReset-Comp/PasswordReset.js';
 import Login from './components/Login-Comp/Login.js'; // Import the Login component
 import { AuthProvider, useAuth } from './components/Firebase/Context/auth-context';
 import Footer from './components/View-Comp/Footer.js';
@@ -46,6 +47,8 @@ function AppContent(){
       element: <Login />,
     },
     {
+      path: '/ForgotPassword',
+      element: <ForgotPassword/>
 
     }
 
@@ -60,8 +63,10 @@ function AppContent(){
     <div className="app-container">
       {userLogIn && <Header />}
       <div className="main-layout">
+        <div className=''>
        {userLogIn && <Sidebar />}
-        <div className="content-container">{routeElement}</div>
+       </div>
+        <main>{routeElement}</main>
       </div>
       <Footer />
     </div>

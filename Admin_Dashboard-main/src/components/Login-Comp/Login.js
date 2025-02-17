@@ -4,7 +4,7 @@ import { doSignInWithEmailAndPassword } from '../Firebase/auth';
 import { getDatabase, ref, update } from "firebase/database";
 import './Login.css';
 import { auth } from '../Firebase/firebase';
-import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'firebase/auth';
 
 // 
 
@@ -70,7 +70,12 @@ import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
       } catch (error) {
         console.error("Google Sign-In error:", error.message);
       }
-    };
+    }
+    const handlePasswordRest = async (e) => {
+      navigate('/ForgotPassword');
+    }
+    
+    ;
 
 
   
@@ -101,7 +106,9 @@ import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
           />
         </div>
         <button type="submit">Log In</button>
-        <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+        {/* <button onClick={handleGoogleSignIn}>Sign in with Google</button> */}
+        <button className='forgot-password-btn'
+         onClick ={handlePasswordRest}>Forgot Password?</button>
         </form>
     </div>
   );
