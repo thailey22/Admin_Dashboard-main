@@ -33,27 +33,41 @@ import { signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail } from 'fir
       e.preventDefault();
       setError('');
       setIsSigningIn(true);
-      navigate('/dashboard');
-
-      
-      
+    
       try {
-        await doSignInWithEmailAndPassword(email, password);
-        console.log('user is signed in');
-        updateUserData(auth.currentUser);
+        // Capture userCredential
+        const userCredential = await doSignInWithEmailAndPassword(email, password);
+        const user = userCredential.user; // Get the authenticated user
+    
+        console.log('User is signed in:', user);
+    
+        // Update user data
+        updateUserData(user);
+        
+        // Navigate after successful login
         navigate('/dashboard');
+    
       } catch (error) {
-        console.log('user is not signed in');
-        setError(error.message);
+        console.error('Sign-in error:', error.code, error.message);
+    
+        // Handle specific authentication errors
+        if (error.code === 'auth/wrong-password') {
+          setError('Incorrect password. Please try again.');
+        } else if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+          setError('Invalid Password. Please try again.');
+          alert('Invalid Password. Please try again.');
+        } else if (error.code === 'auth/invalid-email') {
+          setError('Invalid email format.');
+        } else {
+          setError('Login failed. Please try again.');
+        }
+    
         setIsSigningIn(false);
       }
-      finally{
-        setIsSigningIn(false);
-        setError('');
-    }
-    
-    
     };
+    
+    
+    
 
     const handleGoogleSignIn = async (e) => {
       e.preventDefault();

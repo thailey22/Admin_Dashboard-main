@@ -1,45 +1,90 @@
-import React from 'react';
-import './Reservation.css'; // Make sure to create this CSS file
+import React, { useState, useEffect } from 'react';
+import { getDatabase, ref, onValue, update } from 'firebase/database';
+import './Reservation.css';
 
-const Reservation = () => {
-  // Dummy data for reservations
-  const parkingSpots = [
-    { id: 'A1', status: 'available' },
-    { id: 'A2', status: 'reserved', user: 'John Doe', time: '14:00 - 16:00' },
-    { id: 'A3', status: 'available' },
-    { id: 'B1', status: 'reserved', user: 'Jane Smith', time: '09:00 - 11:00' },
-    { id: 'B2', status: 'available' },
-    { id: 'B3', status: 'reserved', user: 'Mike Johnson', time: '13:00 - 15:00' },
-    { id: 'C1', status: 'available' },
-    { id: 'C2', status: 'reserved', user: 'Emily Brown', time: '10:00 - 12:00' },
-    { id: 'C3', status: 'available' },
-  ];
+const ReservationManagement = () => {
+  const [reservations, setReservations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [spotStatus, setSpotStatus] = useState(null);
+
+
+  useEffect(() => {
+    const db = getDatabase();
+    const dbRef = ref(db, 'Spots');
+  
+    onValue(dbRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const now = Date.now();
+  
+        const reservationsArray = Object.keys(data).map((key) => {
+          const spot = data[key]; // Get the spot data
+          
+          const startTime = spot.StartTime && spot.StartTime !== 0 ? new Date(spot.StartTime).getTime() : 0;
+          const endTime = spot.EndTime && spot.EndTime !== 0 ? new Date(spot.EndTime).getTime() : startTime + 30 * 60 * 1000;
+  
+          // Check if reservation has expired
+          if (now >= endTime && spot.IsReserved) {
+            update(ref(db, `Spots/${key}`), { IsReserved: false, StartTime: 0, EndTime: 0 });
+          }
+  
+          return {
+            id: key,
+            ...spot, // Preserve original values
+            reserved: spot.IsReserved, // Use lowercase in JSX
+            startTime: startTime === 0 ? "Not Reserved" : formatTime(startTime),
+            endTime: startTime === 0 ? "N/A" : formatTime(endTime),
+          };
+        });
+  
+        setReservations(reservationsArray);
+      } else {
+        setReservations([]);
+      }
+    });
+  }, []);
+  
+
+  // Function to format timestamp into HH:MM AM/PM
+  const formatTime = (timestamp) => {
+    if (!timestamp) return "N/A";
+
+    else if (timestamp === 0) return "Not Reserved";
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true });
+  };
 
   return (
-    <div className="reservation-container">
-      <h2>Reservations</h2>
-      <table className="reservation-table">
+    <div className="reservation-management">
+      <h3>Reservation Management</h3>
+      <table>
         <thead>
           <tr>
-            <th>Spot ID</th>
+            <th>ID</th>
             <th>Status</th>
-            <th>Reserved By</th>
-            <th>Time</th>
+            <th>Start Time</th>
+            <th>End Time</th>
           </tr>
         </thead>
         <tbody>
-          {parkingSpots.map((spot) => (
-            <tr key={spot.id} className={spot.status}>
-              <td>{spot.id}</td>
-              <td>{spot.status.charAt(0).toUpperCase() + spot.status.slice(1)}</td>
-              <td>{spot.user || '-'}</td>
-              <td>{spot.time || '-'}</td>
-            </tr>
-          ))}
+              {reservations.length > 0 ? (
+                reservations.map((reservation) => (
+                  <tr key={reservation.id} className={reservation.reserved ? "reserved" : "available"}>
+                    <td>{reservation.id}</td>
+                    <td>{reservation.reserved ? "Reserved" : "Available"}</td>
+                    <td>{reservation.startTime}</td>
+                    <td>{reservation.endTime}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4">No reservations found</td>
+                </tr>
+              )}
         </tbody>
       </table>
     </div>
   );
 };
 
-export default Reservation;
+export default ReservationManagement;

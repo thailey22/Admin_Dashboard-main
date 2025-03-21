@@ -14,6 +14,7 @@ import ForgotPassword from './components/PasswordReset-Comp/PasswordReset.js';
 import Login from './components/Login-Comp/Login.js'; // Import the Login component
 import { AuthProvider, useAuth } from './components/Firebase/Context/auth-context';
 import Footer from './components/View-Comp/Footer.js';
+import Delete from './components/Delete-Comp/Delete.js';
 //import { AuthProvider, authcon } from './context/auth-context.js';
 
 function AppContent(){
@@ -50,6 +51,10 @@ function AppContent(){
       path: '/ForgotPassword',
       element: <ForgotPassword/>
 
+    },
+    {
+      path: "/Delete/:userId",
+      element: <Delete />,
     }
 
   ];
@@ -59,18 +64,18 @@ function AppContent(){
 
   const {userLogIn}  = useAuth();
 
-  return(
-    <div className="app-container">
+  return (
+    <div className="App">
       {userLogIn && <Header />}
       <div className="main-layout">
-        <div className=''>
-       {userLogIn && <Sidebar />}
-       </div>
-        <main>{routeElement}</main>
+        {userLogIn && <Sidebar />} 
+        <main className="main-content">
+          {routeElement}
+          </main>
       </div>
       <Footer />
     </div>
-  )
+  );
 }
 
 

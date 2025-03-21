@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../Firebase/Context/auth-context';
 import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
-import './Users.css'; // Make sure to create this CSS file
+import './Users.css';
 
 const Users = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth(); // Ensure user is authenticated
-  const [users, setUsers] = useState([]); // State to store user data
+  const { currentUser } = useAuth();
+  const [users, setUsers] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (!currentUser) {
@@ -16,14 +17,11 @@ const Users = () => {
     }
 
     const db = getDatabase();
-    const usersRef = ref(db, "user"); // Adjust the reference based on your database structure
+    const usersRef = ref(db, "user");
 
-    // Listen for real-time updates
     const unsubscribe = onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
         const usersData = snapshot.val();
-        console.log("Fetched Data:", usersData); // Debugging log
-
         const usersArray = Object.keys(usersData).map((key) => ({
           id: key,
           ...usersData[key],
@@ -34,12 +32,28 @@ const Users = () => {
       }
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [currentUser, navigate]);
+
+  const handleDelete = (userId) => {
+    navigate(`/Delete/${userId}`);
+  };
+
+  const filteredUsers = users.filter(user =>
+    user.id.includes(searchTerm) ||
+    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="users-container">
       <h2>Registered Users</h2>
+      <input
+        type="text"
+        placeholder="Search by ID, or Email"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="search-input"
+      />
       <table className="users-table">
         <thead>
           <tr>
@@ -47,15 +61,19 @@ const Users = () => {
             <th>Email</th>
             <th>License Plate</th>
             <th>Active</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
-          {users.map((user) => (
+          {filteredUsers.map((user) => (
             <tr key={user.id}>
               <td>{user.id}</td>
               <td>{user.email}</td>
               <td>{user.timestamp}</td>
-              <td>{user.active? "Active" : "Inactive"}</td>
+              <td>{user.active ? "Active" : "Inactive"}</td>
+              <td>
+                <button onClick={() => handleDelete(user.id)}>Delete</button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -65,55 +83,3 @@ const Users = () => {
 };
 
 export default Users;
-
-// const Users = () => {
-// const navigate = useNavigate();
-// const  auth = getAuth();
-
-
-// useEffect(() => {
-
-//   const db = getDatabase();
-//   const usersRef = (db, "user");
-// })
-
-//   // Dummy data for users
-//   const users = [
-//     { id: 1, name: 'John Doe', email: 'john.doe@example.com', licensePlate: 'ABC123' },
-//     { id: 2, name: 'Jane Smith', email: 'jane.smith@example.com', licensePlate: 'XYZ789' },
-//     { id: 3, name: 'Mike Johnson', email: 'mike.johnson@example.com', licensePlate: 'DEF456' },
-//     { id: 4, name: 'Emily Brown', email: 'emily.brown@example.com', licensePlate: 'GHI789' },
-//     { id: 5, name: 'David Wilson', email: 'david.wilson@example.com', licensePlate: 'JKL012' },
-//     { id: 6, name: 'Sarah Davis', email: 'sarah.davis@example.com', licensePlate: 'MNO345' },
-//     { id: 7, name: 'Tom Anderson', email: 'tom.anderson@example.com', licensePlate: 'PQR678' },
-//     { id: 8, name: 'Lisa Taylor', email: 'lisa.taylor@example.com', licensePlate: 'STU901' },
-//   ];
-
-//   return (
-//     <div className="users-container">
-//       <h2>Registered Users</h2>
-//       <table className="users-table">
-//         <thead>
-//           <tr>
-//             <th>ID</th>
-//             <th>Name</th>
-//             <th>Email</th>
-//             <th>License Plate</th>
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {users.map((user) => (
-//             <tr key={user.id}>
-//               <td>{user.id}</td>
-//               <td>{user.name}</td>
-//               <td>{user.email}</td>
-//               <td>{user.licensePlate}</td>
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
-
-// export default Users;
