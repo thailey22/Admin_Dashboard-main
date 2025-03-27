@@ -6,7 +6,7 @@ import ParkingSpaceOverview from '../Parking-Comp/ParkingSpaceOverview';
 import ReservationManagement from '../Reservation-Comp/ReservationManagement';
 import CameraView from '../Camera-Comp/CameraView';
 import ReportsOverview from '../Reports-Comp/ReportsOverview';
-import './Dashboard.css'; // Import CSS for styling
+import './Dashboard.css'; 
 
 const Dashboard = () => {
   const { currentUser } = useAuth();

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue } from "firebase/database";
-import "./ParkingSpaceOverview.css"; // Ensure this file exists for styling
+import "./ParkingSpaceOverview.css"; 
 
 const ParkingSpaceOverview = () => {
   const [totalSpaces, setTotalSpaces] = useState(0);
-  const [reservedSpaces, setReservedSpaces] = useState(0); // Change variable name to reservedSpaces
+  const [reservedSpaces, setReservedSpaces] = useState(0); 
   const navagate = useNavigate();
 
   useEffect(() => {
@@ -16,8 +16,7 @@ const ParkingSpaceOverview = () => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         const total = Object.keys(data).length;
-        // Count reserved spaces (where IsReserved is false)
-        const reserved = Object.values(data).filter((spot) => spot.IsReserved === 1).length;
+        const reserved = Object.values(data).filter((spot) => spot.IsReserved === 0).length;
         setTotalSpaces(total);
         setReservedSpaces(reserved);
       } else {

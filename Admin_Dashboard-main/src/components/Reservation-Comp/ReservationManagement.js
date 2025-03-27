@@ -14,6 +14,7 @@ const ReservationManagement = () => {
     const unsubscribe = onValue(reservationsRef, (snapshot) => {
       if (snapshot.exists()) {
         const data = snapshot.val();
+       
         
       
         const formattedReservations = Object.keys(data).map((key) => ({
@@ -22,6 +23,7 @@ const ReservationManagement = () => {
         }));
 
         setReservations(formattedReservations);
+        console.log(reservations)
       } else {
         setReservations([]);
       }

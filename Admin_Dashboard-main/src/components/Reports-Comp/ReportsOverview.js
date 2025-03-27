@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDatabase, ref, onValue } from "firebase/database";
-import "./ReportsOverview.css"; // Ensure you style this page
+import "./ReportsOverview.css"; 
 
 const ReportsOverview = () => {
   const [totalReports, setTotalReports] = useState(0);
-  const [latestReport, setLatestReport] = useState(null);
+  const [latestReport, setLatestReport] = useState();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +22,7 @@ const ReportsOverview = () => {
 
         setTotalReports(reportList.length);
         setLatestReport(reportList.sort((a, b) => new Date(b.Date) - new Date(a.Date))[0]);
+        console.log(reportList)
       } else {
         setTotalReports(0);
         setLatestReport(null);
