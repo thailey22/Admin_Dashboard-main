@@ -17,41 +17,25 @@ const ParkingSpaces = () => {
         const data = snapshot.val();
         const formattedSpots = Object.keys(data).map((key) => ({
           id: key,
-          ...data[key],
+          StartTime: data[key].StartTime,
+          EndTime: data[key].EndTime,
+          IsReserved: data[key].IsReserved === 0 ? 0 : false, // Normalize values
         }));
         setSpots(formattedSpots);
       } else {
         setSpots([]);
       }
     });
-
+  
     return () => unsubscribe();
   }, []);
+  
 
   // Function to toggle reservation status
   const toggleReservation = (spotId, currentStatus) => {
     const spotRef = ref(db, `Spots/${spotId}`);
-    const newStatus = currentStatus === 0 || currentStatus === false ? 1 : 0;
-
-    // Toggle the IsReserved field
-    update(spotRef, {
-      IsReserved: newStatus,
-    }).then(() => {
-      // Optionally, refetch data after the update
-      const dbRef = ref(db, 'Spots');
-      onValue(dbRef, (snapshot) => {
-        if (snapshot.exists()) {
-          const data = snapshot.val();
-          const formattedSpots = Object.keys(data).map((key) => ({
-            id: key,
-            ...data[key],
-          }));
-          setSpots(formattedSpots);
-        } else {
-          setSpots([]);
-        }
-      });
-    });
+    const newStatus = currentStatus === 0 ? false : 0; // Explicit toggle
+    update(spotRef, { IsReserved: newStatus });
   };
 
   return (
@@ -73,12 +57,13 @@ const ParkingSpaces = () => {
               <td>{spot.id}</td>
               <td>{spot.StartTime}</td>
               <td>{spot.EndTime}</td>
-              <td>{spot.IsReserved === 0 ? 'Free' : 'Reserved'}</td> {/* Show Free or Reserved */}
+              <td>{spot.IsReserved === false ? 'Free' : 'Reserved'}</td>
               <td>
                 <button onClick={() => toggleReservation(spot.id, spot.IsReserved)}>
-                  {spot.IsReserved === 0 ? 'Reserve Spot' : 'Cancel Reservation'}
+                  {spot.IsReserved === false || spot.IsReserved === 0 ? 'Reserve Spot' : 'Cancel Reservation'}
                 </button>
               </td>
+
             </tr>
           ))}
         </tbody>
