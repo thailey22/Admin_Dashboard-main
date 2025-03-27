@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { getDatabase, ref, onValue, update } from 'firebase/database';
 import './Reservation.css';
 
@@ -6,6 +7,7 @@ const ReservationManagement = () => {
   const [reservations, setReservations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [spotStatus, setSpotStatus] = useState(null);
+  const navagate = useNavigate();
 
 
   useEffect(() => {
@@ -55,7 +57,7 @@ const ReservationManagement = () => {
   };
 
   return (
-    <div className="reservation-management">
+    <div className="reservation-container">
       <h3>Reservation Management</h3>
       <table>
         <thead>

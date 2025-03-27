@@ -1,16 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
+import { getDatabase, ref, onValue } from "firebase/database";
+import "./ParkingSpaceOverview.css"; // Ensure this file exists for styling
 
 const ParkingSpaceOverview = () => {
-  // Fetch parking space data from your API
-  const totalSpaces = 100;
-  const occupiedSpaces = 75;
+  const [totalSpaces, setTotalSpaces] = useState(0);
+  const [reservedSpaces, setReservedSpaces] = useState(0); // Change variable name to reservedSpaces
+  const navagate = useNavigate();
+
+  useEffect(() => {
+    const db = getDatabase();
+    const spotsRef = ref(db, "Spots");
+
+    const unsubscribe = onValue(spotsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const total = Object.keys(data).length;
+        // Count reserved spaces (where IsReserved is false)
+        const reserved = Object.values(data).filter((spot) => spot.IsReserved === 1).length;
+        setTotalSpaces(total);
+        setReservedSpaces(reserved);
+      } else {
+        setTotalSpaces(0);
+        setReservedSpaces(0);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const availableSpaces = totalSpaces - reservedSpaces; // Available is total - reserved
+  const occupancyRate = totalSpaces > 0 ? (reservedSpaces / totalSpaces) * 100 : 0;
+  const handelClick = () => {
+
+    navagate('/parking-spaces');
+
+
+  };
 
   return (
     <div className="parking-space-overview">
       <h3>Parking Space Overview</h3>
-      <p>Total Spaces: {totalSpaces}</p>
-      <p>Occupied Spaces: {occupiedSpaces}</p>
-      <p>Available Spaces: {totalSpaces - occupiedSpaces}</p>
+      <div className="stats">
+        <p><strong>Total Spaces:</strong> {totalSpaces}</p>
+        <p><strong>Reserved Spaces:</strong> {reservedSpaces}</p>
+        <p><strong>Available Spaces:</strong> {availableSpaces}</p>
+      </div>
+      <div className="progress-bar-container">
+        <div className="progress-bar" style={{ width: `${occupancyRate}%` }}></div>
+      </div>
+      <p className="occupancy-text">{Math.round(occupancyRate)}% Occupied</p>
+      <button onClick={() => handelClick()}>
+        View Parking Spaces
+      </button>
     </div>
   );
 };

@@ -1,0 +1,53 @@
+.parking-space-overview {
+    width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  h3 {
+    color: #1e2a38;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+  }
+  
+  .stats {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  
+  .stats p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+  }
+  
+  .stats strong {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+  }
+  
+  .progress-bar-container {
+    background-color: #e5e7eb;
+    border-radius: 25px;
+    height: 15px;
+    width: 100%;
+    margin: 15px 0;
+  }
+  
+  .progress-bar {
+    background-color: #3b82f6;
+    height: 100%;
+    border-radius: 25px;
+  }
+  
+  .occupancy-text {
+    font-size: 1.1rem;
+    color: #3b82f6;
+    font-weight: 600;
+  }
+  

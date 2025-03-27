@@ -1,38 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../Firebase/Context/auth-context';
+import { db } from '../Firebase/firebase'; // Ensure correct Firebase import
+import { ref, get, set, remove, onValue, getDatabase } from 'firebase/database';
+import './Reports.css';
+
 const Reports = () => {
-
-  const { currentUser } = useAuth(); // Get current user from context
+  const { currentUser } = useAuth();
   const navigate = useNavigate();
-
-  // Redirect to login if the user is not authenticated
-  useEffect(() => {
-    if (!currentUser) {
-      navigate('/');
-    }
-  }, [currentUser, navigate]);
-  const initialReports = [
-    { id: 1, title: 'Monthly Parking Revenue', date: '2024-11-01', summary: 'Total revenue for October: $15,000' },
-    { id: 2, title: 'Occupancy Rate Analysis', date: '2024-10-25', summary: 'Average occupancy rate: 85%' },
-    { id: 3, title: 'Maintenance Schedule', date: '2024-10-20', summary: 'Upcoming maintenance for Lot A on Nov 15' },
-    { id: 4, title: 'User Satisfaction Survey', date: '2024-10-15', summary: 'Overall satisfaction rate: 4.2/5' },
-    { id: 5, title: 'Peak Hours Report', date: '2024-10-10', summary: 'Busiest hours: 9-11 AM and 4-6 PM' },
-  ];
-
-  const [reports, setReports] = useState(initialReports);
+  const [reports, setReports] = useState([]);
   const [selectedReportId, setSelectedReportId] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [newReport, setNewReport] = useState({ title: '', date: '', summary: '' });
+  const [searchTerm, setSearchTerm] = useState('');
+  const db = getDatabase();
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (!currentUser) navigate('/');
+  }, [currentUser, navigate]);
+
+  // Fetch reports from Firebase in real-time
+  useEffect(() => {
+    const reportsRef = ref(db, 'Reports');
+    
+    onValue(reportsRef, (snapshot) => {
+      if (snapshot.exists()) {
+        const reportsData = snapshot.val();
+        const reportList = Object.keys(reportsData).map((key) => ({
+          id: key, // Firebase ID (e.g., "R1")
+          ...reportsData[key], // Extract Title, Date, Summary
+        }));
+        setReports(reportList);
+      } else {
+        setReports([]);
+      }
+    });
+
+    return () => {}; // Cleanup function (optional)
+  }, []);
 
   const handleViewDetails = (id) => {
     setSelectedReportId(selectedReportId === id ? null : id);
   };
 
-  const handleDismiss = (id) => {
-    setReports(reports.filter(report => report.id !== id));
-    if (selectedReportId === id) {
-      setSelectedReportId(null);
+  const handleDismiss = async (id) => {
+    if (window.confirm('Are you sure you want to dismiss this report?')) {
+      await remove(ref(db, `Reports/${id}`));
+      setReports(reports.filter(report => report.id !== id));
     }
   };
 
@@ -45,19 +60,47 @@ const Reports = () => {
     setNewReport({ ...newReport, [name]: value });
   };
 
-  const handleSubmitReport = (e) => {
+  const handleSubmitReport = async (e) => {
     e.preventDefault();
-    const id = reports.length > 0 ? Math.max(...reports.map(r => r.id)) + 1 : 1;
-    const reportToAdd = { ...newReport, id };
-    setReports([...reports, reportToAdd]);
-    setNewReport({ title: '', date: '', summary: '' });
+    const newReportId = `${Date.now().toString(36)}`; // Generate unique ID
+    const reportToAdd = {
+      Title: newReport.title,
+      Date: newReport.date,
+      Summary: newReport.summary,
+    };
+
+    await set(ref(db, `Reports/${newReportId}`), reportToAdd);
     setShowAddForm(false);
   };
+
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value.toLowerCase());
+  };
+
+  const filteredReports = reports.filter(
+    (report) =>
+      report.Title.toLowerCase().includes(searchTerm) ||
+      report.Date.toLowerCase().includes(searchTerm)
+  );
 
   return (
     <div className="reports-container">
       <h2>Reports</h2>
-      <button onClick={handleAddReport} className="add-report-btn">Add New Report</button>
+
+      {/* Search Bar */}
+      <div className="search-container">
+        <input
+          type="text"
+          value={searchTerm}
+          onChange={handleSearchChange}
+          placeholder="Search Reports..."
+        />
+      </div>
+
+      <button onClick={handleAddReport} className="add-report-btn">
+        Add New Report
+      </button>
+
       {showAddForm && (
         <form onSubmit={handleSubmitReport} className="add-report-form">
           <input
@@ -83,16 +126,20 @@ const Reports = () => {
             required
           />
           <button type="submit">Submit Report</button>
-          <button type="button" onClick={() => setShowAddForm(false)}>Cancel</button>
+          <button type="button" onClick={() => setShowAddForm(false)}>
+            Cancel
+          </button>
         </form>
       )}
+
+      {/* Reports List */}
       <div className="reports-list">
-        {reports.map((report) => (
+        {filteredReports.map((report) => (
           <React.Fragment key={report.id}>
             <div className="report-item">
               <div className="report-info">
-                <h3>{report.title}</h3>
-                <p>Date: {report.date}</p>
+                <h3>{report.Title}</h3>
+                <p>Date: {report.Date}</p>
               </div>
               <div className="report-actions">
                 <button onClick={() => handleViewDetails(report.id)}>
@@ -103,7 +150,7 @@ const Reports = () => {
             </div>
             {selectedReportId === report.id && (
               <div className="report-details">
-                <p>{report.summary}</p>
+                <p>{report.Summary}</p>
               </div>
             )}
           </React.Fragment>

@@ -18,6 +18,8 @@ import Delete from './components/Delete-Comp/Delete.js';
 //import { AuthProvider, authcon } from './context/auth-context.js';
 
 function AppContent(){
+
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const routesArray =[
     {
       path: '/dashboard',
@@ -68,7 +70,7 @@ function AppContent(){
     <div className="App">
       {userLogIn && <Header />}
       <div className="main-layout">
-        {userLogIn && <Sidebar />} 
+        {userLogIn && <Sidebar isCollapsed={isCollapsed} toggleSidebar={() => setIsCollapsed(!isCollapsed)} />}
         <main className="main-content">
           {routeElement}
           </main>

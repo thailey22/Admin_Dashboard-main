@@ -1,0 +1,61 @@
+.reports-overview {
+    max-width:900px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h3 {
+    color: #1e2a38;
+    margin-bottom: 20px;
+    font-size: 1.8rem;
+}
+
+.stats {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.stats p {
+    font-size: 1.2rem;
+    margin: 10px 0;
+}
+
+.stats strong {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: 5px;
+}
+
+.latest-report {
+    background-color: #f3f4f6;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    width: 100%;
+    text-align: left;
+}
+
+.latest-report p {
+    margin: 5px 0;
+}
+
+button {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+button:hover {
+    background-color: #2563eb;
+}

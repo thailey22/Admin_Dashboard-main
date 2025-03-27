@@ -1,0 +1,77 @@
+/* Remove the default margin and padding on the body */
+body {
+  margin: 0; /* Remove default margin */
+  padding: 0; /* Remove default padding */
+  padding-left: 150px; /* Ensure the body content doesn't hide behind the sidebar */
+  margin-top: 60px; /* Adjust the body content to avoid overlapping with the fixed header */
+}
+
+/* Sidebar container */
+.sidebar {
+  width: 250px;
+  height: calc(100vh - 60px); /* Sidebar height should be full height minus header height */
+  background: #1e1e2d;
+  color: white;
+  padding-top: 20px;
+  position: fixed;
+  top: 105px; /* Start sidebar just below the header */
+  left: 0;
+  overflow-y: auto;
+  transition: width 0.3s ease-in-out;
+  z-index: 500; /* Sidebar should be below the header */
+}
+
+/* Sidebar list */
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* Sidebar items */
+.sidebar ul li {
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.sidebar ul li:hover {
+  background: #29293d;
+}
+
+/* Sidebar links */
+.sidebar ul li a {
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  white-space: nowrap; /* Prevents text from wrapping */
+  overflow: hidden;
+}
+
+/* Sidebar icons */
+.icon {
+  margin-right: 10px;
+  font-size: 18px;
+}
+
+/* Collapsible sidebar */
+.sidebar.collapsed {
+  width: 80px;
+}
+
+.sidebar.collapsed ul li a {
+  justify-content: center;
+}
+
+.sidebar.collapsed .icon {
+  margin-right: 0;
+}
+
+/* Hide text when sidebar is collapsed */
+.sidebar.collapsed ul li a span:not(.icon) {
+  display: none;
+}

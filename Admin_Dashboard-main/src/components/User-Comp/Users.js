@@ -9,6 +9,7 @@ const Users = () => {
   const { currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [dropdownOpen, setDropdownOpen] = useState(null);
 
   useEffect(() => {
     if (!currentUser) {
@@ -39,6 +40,18 @@ const Users = () => {
     navigate(`/Delete/${userId}`);
   };
 
+  const handleEdit = (userId) => {
+    navigate(`/Edit/${userId}`);
+  };
+
+  const handleView = (userId) => {
+    navigate(`/View/${userId}`);
+  };
+
+  const toggleDropdown = (userId) => {
+    setDropdownOpen(dropdownOpen === userId ? null : userId);
+  };
+
   const filteredUsers = users.filter(user =>
     user.id.includes(searchTerm) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
@@ -61,7 +74,7 @@ const Users = () => {
             <th>Email</th>
             <th>License Plate</th>
             <th>Active</th>
-            <th>Delete</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -71,8 +84,15 @@ const Users = () => {
               <td>{user.email}</td>
               <td>{user.timestamp}</td>
               <td>{user.active ? "Active" : "Inactive"}</td>
-              <td>
-                <button onClick={() => handleDelete(user.id)}>Delete</button>
+              <td className="dropdown-container">
+                <button className="three-dot-btn" onClick={() => toggleDropdown(user.id)}>⋮</button>
+                {dropdownOpen === user.id && (
+                  <div className="dropdown-menu">
+                    <button onClick={() => handleView(user.id)}>View</button>
+                    <button onClick={() => handleEdit(user.id)}>Edit</button>
+                    <button onClick={() => handleDelete(user.id)}>Delete</button>
+                  </div>
+                )}
               </td>
             </tr>
           ))}
