@@ -12,7 +12,7 @@ const ReservationManagement = () => {
 
   useEffect(() => {
     const db = getDatabase();
-    const dbRef = ref(db, 'Spots');
+    const dbRef = ref(db, 'parkingSpots'); // Adjust the path to your database structure
   
     onValue(dbRef, (snapshot) => {
       if (snapshot.exists()) {

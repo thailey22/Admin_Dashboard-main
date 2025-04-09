@@ -9,7 +9,7 @@ const ReservationManagement = () => {
 
   useEffect(() => {
     const db = getDatabase();
-    const reservationsRef = ref(db, "Reservations");
+    const reservationsRef = ref(db, "reservations");
 
     const unsubscribe = onValue(reservationsRef, (snapshot) => {
       if (snapshot.exists()) {
@@ -52,10 +52,10 @@ const ReservationManagement = () => {
           <tbody>
             {reservations.map((reservation) => (
               <tr key={reservation.id}>
-                <td>{reservation.User || "N/A"}</td>
-                <td>{reservation.Space || "N/A"}</td>
-                <td>{reservation.StartTime || "N/A"}</td>
-                <td>{reservation.EndTime || "N/A"}</td>
+                <td>{reservation.date || "N/A"}</td>
+                <td>{reservation.time || "N/A"}</td>
+                <td>{reservation.spot || "N/A"}</td>
+                <td>{reservation.timestamp || "N/A"}</td>
               </tr>
             ))}
           </tbody>

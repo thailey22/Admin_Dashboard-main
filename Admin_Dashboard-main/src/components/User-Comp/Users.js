@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../Firebase/Context/auth-context';
 import { useNavigate } from 'react-router-dom';
-import { getDatabase, ref, onValue } from 'firebase/database';
+import { getDatabase, ref, onValue, off } from 'firebase/database';
 import './Users.css';
+import { database } from '../Firebase/firebase';
 
 const Users = () => {
   const navigate = useNavigate();
@@ -18,9 +19,10 @@ const Users = () => {
     }
 
     const db = getDatabase();
-    const usersRef = ref(db, "user");
+    const usersRef = ref(database, `users`);
+    console.log(usersRef.parent);
 
-    const unsubscribe = onValue(usersRef, (snapshot) => {
+  onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
         const usersData = snapshot.val();
         const usersArray = Object.keys(usersData).map((key) => ({
@@ -28,13 +30,15 @@ const Users = () => {
           ...usersData[key],
         }));
         setUsers(usersArray);
+        console.log(usersArray);
       } else {
         setUsers([]);
       }
     });
 
-    return () => unsubscribe();
+    return () => {off(usersRef);}; // Clean up the listener when the component unmounts
   }, [currentUser, navigate]);
+
 
   const handleDelete = (userId) => {
     navigate(`/Delete/${userId}`);
@@ -70,20 +74,19 @@ const Users = () => {
       <table className="users-table">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>Name</th>
             <th>Email</th>
-            <th>License Plate</th>
-            <th>Active</th>
-            <th>Actions</th>
+            <th>Phone</th>
+            <th>Date Created</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.map((user) => (
             <tr key={user.id}>
-              <td>{user.id}</td>
+              <td>{user.displayName}</td>
               <td>{user.email}</td>
-              <td>{user.timestamp}</td>
-              <td>{user.active ? "Active" : "Inactive"}</td>
+              <td>{user.phone}</td>
+              <td>{user.createdAt}</td>
               <td className="dropdown-container">
                 <button className="three-dot-btn" onClick={() => toggleDropdown(user.id)}>⋮</button>
                 {dropdownOpen === user.id && (

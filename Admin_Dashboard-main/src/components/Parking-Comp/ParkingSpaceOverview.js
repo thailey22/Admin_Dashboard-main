@@ -10,7 +10,7 @@ const ParkingSpaceOverview = () => {
 
   useEffect(() => {
     const db = getDatabase();
-    const spotsRef = ref(db, "Spots");
+    const spotsRef = ref(db, "parkingSpots"); // Adjust the path to your database structure
 
     const unsubscribe = onValue(spotsRef, (snapshot) => {
       if (snapshot.exists()) {

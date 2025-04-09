@@ -9,7 +9,7 @@ const ParkingSpaces = () => {
   const navigate = useNavigate();
   const [spots, setSpots] = useState([]); // State to store parking spots data
   const db = getDatabase();
-  const spotsRef = ref(db, `Spots`);
+  const spotsRef = ref(db, `parkingSpots`);
 
   useEffect(() => {
     const unsubscribe = onValue(spotsRef, (snapshot) => {
@@ -30,15 +30,15 @@ const ParkingSpaces = () => {
 
   // Function to toggle reservation status
   const toggleReservation = (spotId, currentStatus) => {
-    const spotRef = ref(db, `Spots/${spotId}`);
-    const newStatus = currentStatus === 0 || currentStatus === false ? 1 : 0;
+    const spotRef = ref(db, `parkingSpots/${spotId}`);
+    const newStatus = currentStatus === 'empty' ? 'empty' : 'free';
 
     // Toggle the IsReserved field
     update(spotRef, {
       IsReserved: newStatus,
     }).then(() => {
       // Optionally, refetch data after the update
-      const dbRef = ref(db, 'Spots');
+      const dbRef = ref(db, 'parkingSpots');
       onValue(dbRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
@@ -73,10 +73,10 @@ const ParkingSpaces = () => {
               <td>{spot.id}</td>
               <td>{spot.StartTime}</td>
               <td>{spot.EndTime}</td>
-              <td>{spot.IsReserved === 0 ? 'Free' : 'Reserved'}</td> {/* Show Free or Reserved */}
+              <td>{spot.status === 'empty' ? 'Free' : ''}</td> {/* Show Free or Reserved */}
               <td>
                 <button onClick={() => toggleReservation(spot.id, spot.IsReserved)}>
-                  {spot.IsReserved === 0 ? 'Reserve Spot' : 'Cancel Reservation'}
+                  {spot.status === 'empty' ? 'Reserve Spot' : 'Cancel Reservation'}
                 </button>
               </td>
             </tr>
