@@ -17,16 +17,19 @@ const ParkingSpaces = () => {
         const data = snapshot.val();
         const formattedSpots = Object.keys(data).map((key) => ({
           id: key,
-          ...data[key],
+          StartTime: data[key].StartTime,
+          EndTime: data[key].EndTime,
+          IsReserved: data[key].IsReserved === 0 ? 0 : false, // Normalize values
         }));
         setSpots(formattedSpots);
       } else {
         setSpots([]);
       }
     });
-
+  
     return () => unsubscribe();
   }, []);
+  
 
   // Function to toggle reservation status
   const toggleReservation = (spotId, currentStatus) => {
@@ -79,6 +82,7 @@ const ParkingSpaces = () => {
                   {spot.status === 'empty' ? 'Reserve Spot' : 'Cancel Reservation'}
                 </button>
               </td>
+
             </tr>
           ))}
         </tbody>
