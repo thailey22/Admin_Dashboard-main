@@ -11,6 +11,7 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(null);
+  const [userCars, setUserCars] = useState({});
 
   useEffect(() => {
     if (!currentUser) {
@@ -18,11 +19,8 @@ const Users = () => {
       return;
     }
 
-    const db = getDatabase();
-    const usersRef = ref(database, `users`);
-    console.log(usersRef.parent);
-
-  onValue(usersRef, (snapshot) => {
+    const usersRef = ref(database, 'users');
+    onValue(usersRef, (snapshot) => {
       if (snapshot.exists()) {
         const usersData = snapshot.val();
         const usersArray = Object.keys(usersData).map((key) => ({
@@ -30,15 +28,42 @@ const Users = () => {
           ...usersData[key],
         }));
         setUsers(usersArray);
-        console.log(usersArray);
       } else {
         setUsers([]);
       }
     });
 
-    return () => {off(usersRef);}; // Clean up the listener when the component unmounts
+    return () => { off(usersRef); };
   }, [currentUser, navigate]);
 
+  const toggleDropdown = (userId) => {
+    if (dropdownOpen === userId) {
+      setDropdownOpen(null);
+      return;
+    }
+
+    setDropdownOpen(userId);
+
+    // Load cars if not already loaded
+    if (!userCars[userId]) {
+      const carsRef = ref(database, `users/${userId}/cars`);
+      onValue(carsRef, (snapshot) => {
+        if (snapshot.exists()) {
+          setUserCars((prev) => ({
+            ...prev,
+            [userId]: Object.values(snapshot.val()),
+          }));
+        } else {
+          setUserCars((prev) => ({
+            ...prev,
+            [userId]: [],
+          }));
+        }
+      }, {
+        onlyOnce: true
+      });
+    }
+  };
 
   const handleDelete = (userId) => {
     navigate(`/Delete/${userId}`);
@@ -49,16 +74,12 @@ const Users = () => {
   };
 
   const handleView = (userId) => {
-    navigate(`/View/${userId}`);
-  };
-
-  const toggleDropdown = (userId) => {
-    setDropdownOpen(dropdownOpen === userId ? null : userId);
+    navigate(`/ViewUser/${userId}`);
   };
 
   const filteredUsers = users.filter(user =>
     user.id.includes(searchTerm) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -78,26 +99,49 @@ const Users = () => {
             <th>Email</th>
             <th>Phone</th>
             <th>Date Created</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {filteredUsers.map((user) => (
-            <tr key={user.id}>
-              <td>{user.displayName}</td>
-              <td>{user.email}</td>
-              <td>{user.phone}</td>
-              <td>{user.createdAt}</td>
-              <td className="dropdown-container">
-                <button className="three-dot-btn" onClick={() => toggleDropdown(user.id)}>⋮</button>
-                {dropdownOpen === user.id && (
-                  <div className="dropdown-menu">
-                    <button onClick={() => handleView(user.id)}>View</button>
-                    <button onClick={() => handleEdit(user.id)}>Edit</button>
-                    <button onClick={() => handleDelete(user.id)}>Delete</button>
-                  </div>
-                )}
+            <React.Fragment key={user.id}>
+              <tr>
+                <td>{user.displayName || user.firstName}</td>
+                <td>{user.email}</td>
+                <td>{user.phone}</td>
+                <td>{user.createdAt}</td>
+                
+                <td className="action-buttons">
+                <button className="btn view-btn" onClick={() => handleView(user.id)}>View</button>
+                <button className="btn edit-btn" onClick={() => handleEdit(user.id)}>Edit</button>
+                <button className="btn delete-btn" onClick={() => handleDelete(user.id)}>Delete</button>
+                <button className="btn cars-btn" onClick={() => toggleDropdown(user.id)}>
+                  {dropdownOpen === user.id ? 'Hide Cars' : 'Show Cars'}
+                </button>
               </td>
-            </tr>
+
+
+              </tr>
+              {dropdownOpen === user.id && userCars[user.id] && (
+                <tr>
+                  <td colSpan="5">
+                    <div className="cars-dropdown">
+                      {userCars[user.id].length > 0 ? (
+                        <ul>
+                          {userCars[user.id].map((car, index) => (
+                            <li key={index}>
+                              {car.make} {car.model} - {car.color} ({car.license})
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No cars found for this user.</p>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

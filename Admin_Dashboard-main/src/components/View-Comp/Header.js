@@ -12,35 +12,38 @@ const Header = () => {
   const { currentUser, signOut } = useAuth();
   const navigate = useNavigate();
 
+  
+
   // Fetch notifications from Firebase
   useEffect(() => {
     if (currentUser) {
       const db = getDatabase();
-      const reportsRef = ref(db, 'Reports'); 
-
-      const unsubscribe = onValue(reportsRef, (snapshot) => {
+      const notificationsRef = ref(db, 'notifications'); // Reference for notifications
+  
+      const unsubscribe = onValue(notificationsRef, (snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const newNotifications = Object.keys(data).map((key) => ({
             id: key,
-            message: `Report: ${data[key].Title}`,
+            ...data[key] // Getting the actual notification data
           }));
-
-          setNotifications(newNotifications);
+  
+          setNotifications(newNotifications); // Update the state to show notifications
         } else {
           setNotifications([]);
         }
       });
-
+  
       return () => unsubscribe();
     }
-  }, [currentUser]); 
+  }, [currentUser]); // Re-run when the currentUser changes
+  
 
   const handleSignOut = async () => {
     try {
       const db = getDatabase();
       const uid = auth.currentUser?.uid;
-      const dbRef = ref(db, `user/${uid}`);
+      const dbRef = ref(db, `users/${uid}`);
 
       await update(dbRef, { active: false });
       await signOut();
@@ -72,14 +75,15 @@ const Header = () => {
                     className="notification-item" 
                     onClick={() => handleNotificationClick(notification)}
                   >
-                    {notification.message}
+                    {notification.message} {/* Displaying the notification message */}
                   </div>
                 ))
               ) : (
-                <div className="notification-item">No new reports</div>
+                <div className="notification-item">No new notifications</div>
               )}
             </div>
           )}
+
         </div>
 
         {/* User Profile Button */}

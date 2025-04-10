@@ -15,6 +15,7 @@ import Login from './components/Login-Comp/Login.js'; // Import the Login compon
 import { AuthProvider, useAuth } from './components/Firebase/Context/auth-context';
 import Footer from './components/View-Comp/Footer.js';
 import Delete from './components/Delete-Comp/Delete.js';
+import ViewUser from './components/User-Comp/ViewUser.js';
 //import { AuthProvider, authcon } from './context/auth-context.js';
 
 function AppContent(){
@@ -57,8 +58,12 @@ function AppContent(){
     {
       path: "/Delete/:userId",
       element: <Delete />,
-    }
+    },
+    {
+    path: "/ViewUser/:userId",
+    element: <ViewUser />,
 
+    },
   ];
 
 
@@ -71,9 +76,10 @@ function AppContent(){
       {userLogIn && <Header />}
       <div className="main-layout">
         {userLogIn && <Sidebar isCollapsed={isCollapsed} toggleSidebar={() => setIsCollapsed(!isCollapsed)} />}
-        <main className="main-content">
-          {routeElement}
-          </main>
+        <main className={`main-content ${isCollapsed ? 'collapsed' : ''}`}>
+         {routeElement}
+        </main>
+
       </div>
       <Footer />
     </div>

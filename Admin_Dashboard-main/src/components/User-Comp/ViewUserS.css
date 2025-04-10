@@ -1,0 +1,26 @@
+.view-container {
+    padding: 20px;
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .user-info p {
+    margin: 8px 0;
+  }
+  
+  .profile-img img {
+    max-width: 150px;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+  
+  .cars-section {
+    margin-top: 20px;
+  }
+  
+  .back-btn {
+    margin-top: 20px;
+    padding: 8px 16px;
+    cursor: pointer;
+  }
+  
