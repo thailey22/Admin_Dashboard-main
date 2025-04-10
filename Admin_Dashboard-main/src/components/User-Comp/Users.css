@@ -24,14 +24,14 @@
   background-color: #f9f9f9;
 }
 
-.users-table button {
+/* .users-table button {
   padding: 5px 10px;
   background-color: #131068;
   color: white;
   border: none;
   cursor: pointer;
   border-radius: 3px;
-}
+} */
 
 .users-table button:hover {
   background-color: #afb424;
@@ -111,6 +111,68 @@
   text-align: left;
   cursor: pointer;
 }
+
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 5px;
+  z-index: 1;
+}
+
+.cars-dropdown {
+  background: #f0f0f0;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.action-buttons button {
+  margin: 0 4px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* Individual button styles */
+.view-btn {
+  background-color: #4CAF50; /* green */
+}
+
+.edit-btn {
+  background-color: #2196F3; /* blue */
+}
+
+.delete-btn {
+  background-color: #f44336; /* red */
+}
+
+.cars-btn {
+  background-color: #ff9800; /* orange */
+}
+
+/* Optional hover effect */
+.btn:hover {
+  opacity: 0.9;
+}
+
 
 /* .dropdown-menu button:hover {
   background: #f0f0f0;

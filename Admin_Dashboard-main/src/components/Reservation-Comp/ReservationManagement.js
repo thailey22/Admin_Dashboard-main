@@ -17,12 +17,15 @@ const ReservationManagement = () => {
        
         
       
-        const formattedReservations = Object.keys(data).map((key) => ({
-          id: key,
-          ...data[key] 
-        }));
+        const reservationsArray = Object.entries(data).flatMap(([userId, userReservations]) =>
+          Object.entries(userReservations).map(([resId, resData]) => ({
+            id: resId,
+            userId,
+            ...resData
+          }))
+        );
 
-        setReservations(formattedReservations);
+        setReservations(reservationsArray);
         console.log(reservations)
       } else {
         setReservations([]);

@@ -16,7 +16,7 @@ const ParkingSpaceOverview = () => {
       if (snapshot.exists()) {
         const data = snapshot.val();
         const total = Object.keys(data).length;
-        const reserved = Object.values(data).filter((spot) => spot.IsReserved === 0).length;
+        const reserved = Object.values(data).filter((spot) => spot.status === 'scheduled').length;
         setTotalSpaces(total);
         setReservedSpaces(reserved);
       } else {
