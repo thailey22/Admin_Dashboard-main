@@ -34,7 +34,7 @@ const ParkingSpaces = () => {
   // Function to toggle reservation status
   const toggleReservation = (spotId, currentStatus) => {
     const spotRef = ref(db, `parkingSpots/${spotId}`);
-    const newStatus = currentStatus === 'empty' ? 'empty' : 'free';
+    const newStatus = currentStatus === 'scheduled' ? 'empty' : 'Ocupied';
 
     // Toggle the IsReserved field
     update(spotRef, {

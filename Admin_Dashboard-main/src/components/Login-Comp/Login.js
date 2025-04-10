@@ -46,7 +46,7 @@ const Login = () => {
 
       console.log('User is signed in:', user);
 
-      updateUserData(user);
+      // updateUserData(user);
       navigate('/dashboard');
 
     } catch (error) {
@@ -77,7 +77,7 @@ const Login = () => {
       const result = await signInWithPopup(auth, provider);
       const user = result.user;
 
-      updateUserData(user);
+      // updateUserData(user);
       navigate('/dashboard');
       console.log("Google Sign-In successful");
     } catch (error) {

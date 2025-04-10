@@ -22,20 +22,17 @@ const ReservationManagement = () => {
         const reservationsArray = Object.keys(data).map((key) => {
           const spot = data[key]; // Get the spot data
           
-          const startTime = spot.StartTime && spot.StartTime !== 0 ? new Date(spot.StartTime).getTime() : 0;
-          const endTime = spot.EndTime && spot.EndTime !== 0 ? new Date(spot.EndTime).getTime() : startTime + 30 * 60 * 1000;
+        
   
           // Check if reservation has expired
-          if (now >= endTime && spot.IsReserved) {
-            update(ref(db, `Spots/${key}`), { IsReserved: false, StartTime: 0, EndTime: 0 });
-          }
+          // if (now >= endTime && spot.IsReserved) {
+          //   update(ref(db, `parkingSpot/${key}`), { status: 'empty'});
+          // }
   
           return {
             id: key,
             ...spot, // Preserve original values
-            reserved: spot.IsReserved, // Use lowercase in JSX
-            startTime: startTime === 0 ? "Not Reserved" : formatTime(startTime),
-            endTime: startTime === 0 ? "N/A" : formatTime(endTime),
+            status: spot.status, // Use lowercase in JSX
           };
         });
   
@@ -71,12 +68,10 @@ const ReservationManagement = () => {
         <tbody>
               {reservations.length > 0 ? (
                 reservations.map((reservation) => (
-                  <tr key={reservation.id} className={reservation.reserved ? "reserved" : "available"}>
-                    <td>{reservation.id}</td>
-                    <td>{reservation.reserved ? "Reserved" : "Available"}</td>
-                    <td>{reservation.startTime}</td>
-                    <td>{reservation.endTime}</td>
-                  </tr>
+                  <tr key={reservation.id} className={reservation.status}>
+                  <td>{reservation.id}</td>
+                  <td>{reservation.status}</td>
+                </tr>
                 ))
               ) : (
                 <tr>
